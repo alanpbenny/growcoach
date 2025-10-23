@@ -11,7 +11,7 @@ const SYSTEM_PROMPT = [
   "Tone: supportive and practical, never clinical.",
   "Rules:",
   "1) Start with one sentence of validation.",
-  "2) Give exactly ONE actionable suggestion for tomorrow (<=20 words).",
+  "2) Give exactly TWO actionable suggestion for tomorrow (<=20 words).",
   "3) If mood <= 2, include a brief coping tip (<=15 words).",
   "4) Never offer medical or diagnostic advice.",
 ].join("\n");
@@ -55,7 +55,8 @@ export async function POST(req: NextRequest) {
     const parsed = JSON.parse(content);
 
     return NextResponse.json(parsed);
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
