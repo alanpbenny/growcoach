@@ -2,9 +2,24 @@
 
 import { useState } from 'react';
 import CoachCard, { CoachReply } from '../components/CoachCard';
+import { useEffect } from 'react';
+import { supabase } from '@/lib/supabaseClient';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
+
 export default function CheckInPage() {
+  const router = useRouter();
+
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (!data.user) {
+        router.replace('/auth');
+      }
+    });
+  }, [router]);
+
   const [mood, setMood] = useState<number>(3);
   const [reflection, setReflection] = useState('');
   const [reply, setReply] = useState<CoachReply | null>(null);
@@ -45,10 +60,21 @@ export default function CheckInPage() {
   return (
     <main className="min-h-screen bg-gray-50 text-gray-900">
       <div className="max-w-2xl mx-auto px-4 py-8">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Daily Check-In</h1>
-          <Link href="/" className="text-sm underline">Home</Link>
+       <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">Daily Check-In</h1>
+          <div className="flex gap-3 text-sm">
+          <Link href="/" className="underline">Home</Link>
+           <button
+            onClick={async () => {
+              await supabase.auth.signOut(); // logs out
+              router.push('/login');          // send back to login
+            }}
+            className="underline text-red-600 hover:text-red-800"
+          >
+            Logout
+          </button>
         </div>
+      </div>
         <p className="opacity-75">Log your mood and reflection to get a coach reply.</p>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
@@ -58,7 +84,7 @@ export default function CheckInPage() {
               value={mood}
               onChange={(e) => setMood(Number(e.target.value))}
               className="w-32 rounded-lg border px-3 py-2 bg-white"
-            >
+             >
               {[1, 2, 3, 4, 5].map((n) => (
                 <option key={n} value={n}>{n}</option>
               ))}
