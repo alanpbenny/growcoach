@@ -14,5 +14,6 @@ export default function CoachCard({ reply }: { reply: CoachReply | null }) {
       <p className="mt-2 font-semibold">Tomorrow: {reply.suggestion}</p>
       {reply.tip && <p className="mt-1 text-sm">Tip: {reply.tip}</p>}
     </div>
+    
   );
 }
